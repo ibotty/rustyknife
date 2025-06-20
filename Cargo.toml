@@ -27,7 +27,7 @@ crate-type = ["lib", "cdylib"]
 
 [dependencies]
 nom = "6.0"
-base64 = "0.13"
+base64 = "0.22"
 idna = "1"
 serde = { version = "1.0", features = ["derive"], optional=true }
 

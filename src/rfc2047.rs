@@ -2,11 +2,11 @@
 //!
 //! [Header extensions for non-ASCII text]: https://tools.ietf.org/html/rfc2047
 
-
 use std::borrow::Cow;
 
 use encoding_rs::{Encoding, UTF_8}; // TODO: was ASCII
 
+use base64::prelude::{Engine as _, BASE64_STANDARD};
 use nom::branch::alt;
 use nom::bytes::complete::{tag, take_while1};
 use nom::combinator::{map, opt};
@@ -43,7 +43,7 @@ fn decode_text(encoding: &[u8], text: &[u8]) -> Option<Vec<u8>>
 {
     match &encoding.to_ascii_lowercase()[..] {
         b"q" => decode_qp(text),
-        b"b" => base64::decode(text).ok(),
+        b"b" => BASE64_STANDARD.decode(&text).ok(),
         _ => None,
     }
 }
