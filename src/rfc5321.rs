@@ -64,14 +64,22 @@ impl UTF8Policy for Intl {
     }
 
     fn sub_domain(input: &[u8]) -> NomResult<&[u8]> {
-        verify(recognize_many1(alt((map(take1_filter(_is_ldh), char::from), utf8_non_ascii))), |label| {
-            idna::Config::default()
-                .use_std3_ascii_rules(true)
-                .verify_dns_length(true)
-                .check_hyphens(true)
-                .to_ascii(str::from_utf8(label).unwrap())
-                .is_ok()
-        })(input)
+        verify(
+            recognize_many1(alt((
+                map(take1_filter(_is_ldh), char::from),
+                utf8_non_ascii,
+            ))),
+            |label| {
+                idna::uts46::Uts46::default()
+                    .to_ascii(
+                        label,
+                        idna::AsciiDenyList::STD3,
+                        idna::uts46::Hyphens::Check,
+                        idna::uts46::DnsLength::Verify,
+                    )
+                    .is_ok()
+            },
+        )(input)
     }
 }
 
